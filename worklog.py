@@ -1,5 +1,4 @@
-from menus import *
-
+from mainmenu import *
 
 if __name__ == "__main__":
     main_menu = MainMenu()
