@@ -147,8 +147,6 @@ class TestTaskSeach(unittest.TestCase):
         employee_username = "test"
         TestEmployeeMenu.addEmployee(employee_name,employee_username)
 
-
-
     @classmethod
     def addEmployee(cls, employee_name, employee_username):
         newemployee = Employee.create(employee_username=employee_username,
@@ -205,7 +203,29 @@ class TestTaskSeach(unittest.TestCase):
             tasksearch_menu.simple_search()
         self.assertEqual(len(tasksearch_menu.entries), 0)
 
+    def test_employee_search(self):
+        tasksearch_menu = TaskSearch()
+        with mock.patch('builtins.input', side_effect=['Testing Task',
+                                                       'q', 'q']):
+            tasksearch_menu.search_by_employee_name()
+        self.assertEqual(len(tasksearch_menu.entries), 1)
+
+        with mock.patch('builtins.input', side_effect=['John Doe',
+                                                       'q', 'q']):
+            tasks_found = tasksearch_menu.search_by_employee_name()
+        self.assertFalse(tasks_found)
+
+    def test_date_search(self):
+        tasksearch_menu = TaskSearch()
+        today_str = datetime.datetime.now().strftime('%m/%d/%Y')
+        with mock.patch('builtins.input', side_effect=[today_str,'q','q','q']):
+            tasksearch_menu.search_by_taskdate()
+        self.assertEqual(len(tasksearch_menu.entries), 1)
+
+
+
 
 
 if __name__ == "__main__":
+     print("hi")
      unittest.main()

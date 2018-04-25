@@ -19,11 +19,10 @@ class TaskSearch():
 
     def view_entries(self, **kwargs):
         """view previous entries """
+        self.entries = None
         if "employee" in kwargs and kwargs['employee']:
-            print("employee not none")
             self.entries = Task.select().where(Task.employee == kwargs['employee'])\
                       .order_by(Task.id.asc())
-            print(entries)
         elif "time_spent" in kwargs:
             timespent = int(kwargs['time_spent'])
             self.entries = Task.select().where(Task.timespent == timespent) \
@@ -66,21 +65,24 @@ class TaskSearch():
 
                 if next_action.lower() == "n":
                     position += 1
-                    position = position % len(entries)
+                    position = position % len(self.entries)
                     clear()
                     continue
                 if next_action.lower() == "p":
                     position -= 1
-                    position = position % len(entries)
+                    position = position % len(self.entries)
                     clear()
                     continue
                 if next_action == "q":
                     clear()
                     break
                 if next_action == 'd':
-                    self.delete_entry(entry)
+                    self.delete_entry(self.entry)
                     break
                 clear()
+        else:
+            print("No tasks found.")
+
 
 
     def delete_entry(self,entry):
@@ -110,8 +112,10 @@ class TaskSearch():
         employee_found = find_employee(employee_name)
         if employee_found:
             self.view_entries(employee=employee_found)
+            return True
         else:
             print("Sorry, employee not found.")
+            return False
 
     def search_by_employee_list(self):
         """Search by employee"""
@@ -122,7 +126,11 @@ class TaskSearch():
             employee_map[index+1] = employee
             print("{0}) {1}".format(index+1, employee_name))
         selection = input("Please select an employee by index: ")
-        self.view_entries(employee=employee_map[int(selection)])
+        try:
+          self.view_entries(employee=employee_map[int(selection)])
+        except ValueError:
+            print("Invalid selection")
+
 
     def menu_loop (self):
         """show the menuu"""
