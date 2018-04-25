@@ -23,22 +23,23 @@ class EmployeeMenu:
             newemployee.save()
         except IntegrityError:
             print("Employee is already present in the system.")
-            return
+            return False
         print("New employee has been added successfully.")
+        return True
 
     def view_employees(self, search_query=None):
         """view employees"""
-        employees = Employee.select().order_by(Employee.employee_name.asc())
+        self.employees = Employee.select().order_by(Employee.employee_name.asc())
         if search_query:
-            employees = employees.where(
+            self.employees = employees.where(
                            Employee.employee_username.contains(search_query) |
                            Employee.employee_name.contains(search_query)
                          )
         position = 0
-        if employees:
+        if self.employees:
             clear()
             while True:
-                employee = employees[position]
+                employee = self.employees[position]
                 #timestamp = entry.timestamp.strftime('%A %B %d %Y %I:%M')
                 #print(timestamp)
                 employee_name = employee.employee_name
@@ -71,15 +72,15 @@ class EmployeeMenu:
                 clear()
 
     def delete_entry(self, employee):
-        print(employee.id)
         if input("Are you sure? [yN] ").lower() == 'y':
             task_count = Task.select().where(Task.employee == employee).count()
-            print("task_count="+ str(task_count))
+            #print("task_count="+ str(task_count))
             if  task_count > 0:
                 cantDeleteEmployee()
-                return
+                return False
             employee.delete_instance()
             print("Employee is deleted")
+            return True
 
     def search_employees(self):
         """search employees"""

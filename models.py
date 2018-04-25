@@ -39,6 +39,7 @@ def find_employee(employee_username):
         return employee
 
 
+
 def initialize():
     """create the database and the table if they don't exist"""
     print("initializing ...")
@@ -46,7 +47,7 @@ def initialize():
     print("connecting to database ...")
     db.create_tables([Employee, Task], safe=True)
 
-
+"""
 def create():
     print("creating")
 
@@ -78,6 +79,7 @@ def search():
     print(len(entries))
     for entry in entries:
         print(entry.timestamp)
+"""
 
 if __name__ == "__main__":
     initialize()

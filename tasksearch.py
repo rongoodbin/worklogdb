@@ -21,31 +21,32 @@ class TaskSearch():
         """view previous entries """
         if "employee" in kwargs and kwargs['employee']:
             print("employee not none")
-            entries = Task.select().where(Task.employee == kwargs['employee'])\
+            self.entries = Task.select().where(Task.employee == kwargs['employee'])\
                       .order_by(Task.id.asc())
             print(entries)
         elif "time_spent" in kwargs:
             timespent = int(kwargs['time_spent'])
-            entries = Task.select().where(Task.timespent == timespent) \
+            self.entries = Task.select().where(Task.timespent == timespent) \
                       .order_by(Task.id.asc())
         elif "entry_date" in kwargs:
             sdate =kwargs["entry_date"]
             print("entry_date:"+str(sdate))
-            entries = Task.select().where(Task.timestamp.year == sdate.year\
+            self.entries = Task.select().where(Task.timestamp.year == sdate.year\
                       and Task.timestamp.month == sdate.month\
                       and Task.timestamp.day == sdate.day)\
                       .order_by(Task.id.asc())
         else:
-            entries = Task.select().order_by(Task.id.asc())
+            self.entries = Task.select().order_by(Task.id.asc())
         if "search_query" in kwargs:
-            entries = entries.where(Task.title.contains(kwargs['search_query'])|
+            self.entries = self.entries.where(Task.title.contains
+                                    (kwargs['search_query']) |
                                     Task.notes.contains(kwargs['search_query'])
                                     )
         position = 0
-        if entries:
+        if self.entries:
             clear()
             while True:
-                entry  = entries[position]
+                entry  = self.entries[position]
                 timestamp = entry.timestamp.strftime('%A %B %d %Y %I:%M')
 
                 print('=' * len(timestamp))

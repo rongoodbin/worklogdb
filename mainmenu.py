@@ -32,12 +32,13 @@ class MainMenu():
             task_notes = input("Task Notes:")
 
             if input("Save task? [Yn] ").lower() != 'n':
-                    print("saved successfully")
+                 task = Task(employee=employee, title=task_title,
+                             timespent=int(task_timespent), notes=task_notes)
+                 task.save()
+                 print("Task saved !")
+                 return True
+        return False
 
-            task = Task(employee=employee, title=task_title,
-                        timespent=int(task_timespent), notes=task_notes)
-            task.save()
-            print("Task saved !")
 
     def task_search(self):
         """Search for tasks"""
