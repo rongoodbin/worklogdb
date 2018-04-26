@@ -27,17 +27,27 @@ class MainMenu():
         employee_name = input("Employee name:")
         employee = find_employee(employee_name)
         if employee:
+            task_date_str = input("Task Date(MM/DD/YYYY) or return for today:")
+            task_date = convertdate(task_date_str)
+
             task_title = input("Task title:")
             task_timespent = input("Time spent on Task(minutes):")
             task_notes = input("Task Notes:")
 
             if input("Save task? [Yn] ").lower() != 'n':
-                 task = Task(employee=employee, title=task_title,
-                             timespent=int(task_timespent), notes=task_notes)
+                 if task_date:
+                    task = Task(employee=employee,timestamp=task_date,
+                               title=task_title,timespent=int(task_timespent),
+                               notes=task_notes)
+                 else:
+                     task = Task(employee=employee, title=task_title,
+                                 timespent=int(task_timespent),
+                                 notes=task_notes)
                  task.save()
                  print("Task saved !")
                  return True
-        return False
+        else:
+            return False
 
 
     def task_search(self):

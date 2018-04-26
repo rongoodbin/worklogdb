@@ -55,19 +55,19 @@ class EmployeeMenu:
                 next_action = input("Action [NPqd] ").lower().strip()
                 if next_action.lower() == "n":
                     position += 1
-                    position = position % len(employees)
+                    position = position % len(self.employees)
                     clear()
                     continue
                 if next_action.lower() == "p":
                     position -= 1
-                    position = position % len(employees)
+                    position = position % len(self.employees)
                     clear()
                     continue
                 if next_action == "q":
                     clear()
                     break
                 if next_action == 'd':
-                    self.delete_entry(employee)
+                    self.delete_entry(self.employee)
                     break
                 clear()
 

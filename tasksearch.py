@@ -13,7 +13,8 @@ class TaskSearch():
             ('l', self.search_by_employee_list),
             ('n', self.search_by_employee_name),
             ('t', self.search_by_timespent),
-            ('d', self.search_by_taskdate)
+            ('d', self.search_by_taskdate),
+            ('r', self.search_by_daterange)
 
         ])
 
@@ -34,13 +35,20 @@ class TaskSearch():
                       and Task.timestamp.month == sdate.month\
                       and Task.timestamp.day == sdate.day)\
                       .order_by(Task.id.asc())
+        elif "date_range" in kwargs:
+            startdate  = kwargs["date_range"][0]
+            enddate  =   kwargs["date_range"][1]
+            self.entries = Task.select().where(Task.timestamp.between(
+                                                     startdate,enddate))
         else:
             self.entries = Task.select().order_by(Task.id.asc())
+
         if "search_query" in kwargs:
             self.entries = self.entries.where(Task.title.contains
                                     (kwargs['search_query']) |
                                     Task.notes.contains(kwargs['search_query'])
                                     )
+
         position = 0
         if self.entries:
             clear()
@@ -61,7 +69,7 @@ class TaskSearch():
                 print('d) delete entry')
                 print('q) return to main menu')
 
-                next_action = input("Action [NPqd] ").lower().strip()
+                next_action = input("Action [NPEqd] ").lower().strip()
 
                 if next_action.lower() == "n":
                     position += 1
@@ -76,12 +84,44 @@ class TaskSearch():
                 if next_action == "q":
                     clear()
                     break
+                if next_action == "e":
+                        clear()
+                        self.taskedit(entry)
                 if next_action == 'd':
-                    self.delete_entry(self.entry)
+                    self.delete_entry(entry)
                     break
                 clear()
         else:
             print("No tasks found.")
+
+    def taskedit(self, task):
+
+        timestamp = task.timestamp.strftime('%A %B %d %Y %I:%M')
+
+        print("Task Date:" + timestamp)
+        response = input("Enter new value or enter to leave as is: ")
+        if response != "":
+            newtimestamp = convertdate(response)
+            if newtimestamp:
+                task.timestamp = newtimestamp
+
+        print("Task Title:" + task.title)
+        response = input("Enter new value or enter to leave as is: ")
+        if response != "":
+            task.title = response
+
+        print("Time Spent:" + str(task.timespent))
+        response = input("Enter new value or enter to leave as is: ")
+        if response != "":
+            task.timespent = int(response)
+
+        print("Notes:" + str(task.notes))
+        response = input("Enter new value or enter to leave as is: ")
+        if response != "":
+            task.notes = response
+
+        task.save()
+
 
 
 
@@ -105,6 +145,14 @@ class TaskSearch():
         if datefromuser:
             print(datefromuser)
             self.view_entries(entry_date=datefromuser)
+
+    def search_by_daterange(self):
+        """search by date range"""
+        startdate = convertdate(input("Enter a start date( DD/MM/YYYY: "))
+        enddate = convertdate(input("Enter an end date( DD/MM/YYYY: "))
+
+        if startdate and enddate:
+            self.view_entries(date_range=[startdate,enddate])
 
     def search_by_employee_name(self):
         """Search for tasks by employee name"""
