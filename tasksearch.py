@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from employeemenu import *
 from workdbutils import *
 
@@ -22,38 +21,41 @@ class TaskSearch():
         """view previous entries """
         self.entries = None
         if "employee" in kwargs and kwargs['employee']:
-            self.entries = Task.select().where(Task.employee == kwargs['employee'])\
-                      .order_by(Task.id.asc())
+            self.entries = Task.select().where(
+                Task.employee == kwargs['employee']) \
+                .order_by(Task.id.asc())
         elif "time_spent" in kwargs:
             timespent = int(kwargs['time_spent'])
             self.entries = Task.select().where(Task.timespent == timespent) \
-                      .order_by(Task.id.asc())
+                .order_by(Task.id.asc())
         elif "entry_date" in kwargs:
-            sdate =kwargs["entry_date"]
-            print("entry_date:"+str(sdate))
-            self.entries = Task.select().where(Task.timestamp.year == sdate.year\
-                      and Task.timestamp.month == sdate.month\
-                      and Task.timestamp.day == sdate.day)\
-                      .order_by(Task.id.asc())
+            sdate = kwargs["entry_date"]
+            print("entry_date:" + str(sdate))
+            self.entries = Task.select().where(
+                Task.timestamp.year == sdate.year \
+                and Task.timestamp.month == sdate.month \
+                and Task.timestamp.day == sdate.day) \
+                .order_by(Task.id.asc())
         elif "date_range" in kwargs:
-            startdate  = kwargs["date_range"][0]
-            enddate  =   kwargs["date_range"][1]
+            startdate = kwargs["date_range"][0]
+            enddate = kwargs["date_range"][1]
             self.entries = Task.select().where(Task.timestamp.between(
-                                                     startdate,enddate))
+                startdate, enddate))
         else:
             self.entries = Task.select().order_by(Task.id.asc())
 
         if "search_query" in kwargs:
             self.entries = self.entries.where(Task.title.contains
-                                    (kwargs['search_query']) |
-                                    Task.notes.contains(kwargs['search_query'])
-                                    )
+                                              (kwargs['search_query']) |
+                                              Task.notes.contains(
+                                                  kwargs['search_query'])
+                                              )
 
         position = 0
         if self.entries:
             clear()
             while True:
-                entry  = self.entries[position]
+                entry = self.entries[position]
                 timestamp = entry.timestamp.strftime('%A %B %d %Y %I:%M')
 
                 print('=' * len(timestamp))
@@ -85,8 +87,8 @@ class TaskSearch():
                     clear()
                     break
                 if next_action == "e":
-                        clear()
-                        self.taskedit(entry)
+                    clear()
+                    self.taskedit(entry)
                 if next_action == 'd':
                     self.delete_entry(entry)
                     break
@@ -122,10 +124,7 @@ class TaskSearch():
 
         task.save()
 
-
-
-
-    def delete_entry(self,entry):
+    def delete_entry(self, entry):
         if input("Are you sure? [yN] ").lower() == 'y':
             entry.delete_instance()
             print("Entry is deleted")
@@ -136,8 +135,8 @@ class TaskSearch():
         self.view_entries(time_spent=input("TimeSpent: "))
 
     def simple_search(self):
-       """Simple search of work logs"""
-       self.view_entries(search_query=input("Search query: "))
+        """Simple search of work logs"""
+        self.view_entries(search_query=input("Search query: "))
 
     def search_by_taskdate(self):
         """search by task entry date"""
@@ -152,38 +151,36 @@ class TaskSearch():
         enddate = convertdate(input("Enter an end date( DD/MM/YYYY: "))
 
         if startdate and enddate:
-            self.view_entries(date_range=[startdate,enddate])
+            self.view_entries(date_range=[startdate, enddate])
 
     def search_by_employee_name(self):
         """Search for tasks by employee name"""
-        employee_name = input("Employee name: ").strip()
-        employee_found = find_employee(employee_name)
-        if employee_found:
-            self.view_entries(employee=employee_found)
-            return True
-        else:
-            print("Sorry, employee not found.")
-            return False
+        employee_name = input("Enter partial name:").strip()
+        self.search_by_employee_list(employee_name=employee_name)
 
-    def search_by_employee_list(self):
-        """Search by employee"""
+    def search_by_employee_list(self, employee_name=None):
+        """find by employee list"""
         employee_map = {}
         employees = Employee.select()
-        for index,employee in enumerate(employees):
+        if employee_name:
+            employees = employees.where(
+                Employee.employee_username.contains(employee_name) |
+                Employee.employee_name.contains(employee_name)
+            )
+
+        for index, employee in enumerate(employees):
             employee_name = employee.employee_name
-            employee_map[index+1] = employee
-            print("{0}) {1}".format(index+1, employee_name))
+            employee_map[index + 1] = employee
+            print("{0}) {1}".format(index + 1, employee_name))
         selection = input("Please select an employee by index: ")
         try:
-          self.view_entries(employee=employee_map[int(selection)])
+            self.view_entries(employee=employee_map[int(selection)])
         except ValueError:
             print("Invalid selection")
 
-
-    def menu_loop (self):
+    def menu_loop(self):
         """show the menuu"""
-
-        print("Task Search Menu:"+os.linesep)
+        print("Task Search Menu:" + os.linesep)
         choice = None
         while choice != 'q':
             print("Enter q to quit")

@@ -29,24 +29,25 @@ class EmployeeMenu:
 
     def view_employees(self, search_query=None):
         """view employees"""
-        self.employees = Employee.select().order_by(Employee.employee_name.asc())
+        self.employees = Employee.select().order_by(
+            Employee.employee_name.asc())
         if search_query:
-            self.employees = employees.where(
-                           Employee.employee_username.contains(search_query) |
-                           Employee.employee_name.contains(search_query)
-                         )
+            self.employees = self.employees.where(
+                Employee.employee_username.contains(search_query) |
+                Employee.employee_name.contains(search_query)
+            )
         position = 0
         if self.employees:
             clear()
             while True:
                 employee = self.employees[position]
-                #timestamp = entry.timestamp.strftime('%A %B %d %Y %I:%M')
-                #print(timestamp)
+                # timestamp = entry.timestamp.strftime('%A %B %d %Y %I:%M')
+                # print(timestamp)
                 employee_name = employee.employee_name
-                print('=' *  len(employee_name))
+                print('=' * len(employee_name))
                 print("Employee Username: {0}".format(
-                              employee.employee_username)
-                     )
+                    employee.employee_username)
+                )
                 print("Employee Name: {0}".format(employee.employee_name))
                 print("\n\n" + "=" * len(employee_name))
                 print('N) next entry')
@@ -74,8 +75,7 @@ class EmployeeMenu:
     def delete_entry(self, employee):
         if input("Are you sure? [yN] ").lower() == 'y':
             task_count = Task.select().where(Task.employee == employee).count()
-            #print("task_count="+ str(task_count))
-            if  task_count > 0:
+            if task_count > 0:
                 cantDeleteEmployee()
                 return False
             employee.delete_instance()
@@ -98,3 +98,5 @@ class EmployeeMenu:
             choice = input('Action: ').lower().strip()
             if choice in self.menu:
                 self.menu[choice]()
+        #used for testing purposes
+        return True

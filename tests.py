@@ -33,33 +33,27 @@ class TestEmployeeMenu(unittest.TestCase):
         task.save()
 
     def test_add_employee(self):
-
         employee_menu = EmployeeMenu()
         employee_username = "jblack"
-        employee_name  = "Jack Black"
+        employee_name = "Jack Black"
 
-        with mock.patch('builtins.input', side_effect=[ employee_username,
-                                                        employee_name ,'q']):
+        with mock.patch('builtins.input', side_effect=[employee_username,
+                                                       employee_name, 'q']):
             employee_menu.add_employee()
 
-        found_employee = Employee.get(employee_username = employee_username)
+        found_employee = Employee.get(employee_username=employee_username)
         self.assertEqual(found_employee.employee_username, employee_username)
         self.assertEqual(found_employee.employee_name, employee_name)
 
-
-
     def test_add_existing_employee(self):
-
         employee_menu = EmployeeMenu()
         employee_name = "Ron John"
         employee_username = "rjohn"
-        with mock.patch('builtins.input', side_effect=[ employee_username,
-                                                        employee_name ,'q']):
+        with mock.patch('builtins.input', side_effect=[employee_username,
+                                                       employee_name, 'q']):
             added_successfully = employee_menu.add_employee()
 
         self.assertFalse(added_successfully)
-
-
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     def test_view_employees(self, mock_stdout):
@@ -67,10 +61,10 @@ class TestEmployeeMenu(unittest.TestCase):
         employee_username2 = "rjohn"
 
         employee_username1 = "jblack"
-        employee_name1  = "Jack Black"
+        employee_name1 = "Jack Black"
 
         employee_menu = EmployeeMenu()
-        with mock.patch('builtins.input', side_effect=['q','n','q']):
+        with mock.patch('builtins.input', side_effect=['q', 'n', 'q']):
             employee_menu.view_employees()
         self.assertEqual(len(employee_menu.employees), 2)
 
@@ -82,45 +76,38 @@ class TestEmployeeMenu(unittest.TestCase):
         self.assertEqual(employee.employee_name, employee_name2)
         self.assertEqual(employee.employee_username, employee_username2)
 
-
     def test_delete_employee(self):
-
         employee_username = "jmith"
         employee_name = "Jane Smith"
 
         new_employee = Employee.create(employee_username=employee_username,
-                                        employee_name=employee_name)
+                                       employee_name=employee_name)
 
         new_employee.save()
 
         employee_menu = EmployeeMenu()
-        found_employee = Employee.get(employee_username = employee_username)
-        with mock.patch('builtins.input', side_effect=[ 'y','q']):
-              employee_menu.delete_entry(found_employee)
+        found_employee = Employee.get(employee_username=employee_username)
+        with mock.patch('builtins.input', side_effect=['y', 'q']):
+            employee_menu.delete_entry(found_employee)
 
         with self.assertRaises(DoesNotExist):
-             Employee.get(employee_username=employee_username)
-
+            Employee.get(employee_username=employee_username)
 
     def test_delete_employee_with_task(self):
         employee_menu = EmployeeMenu()
 
-        employee = Employee.get(employee_username = "rjohn")
+        employee = Employee.get(employee_username="rjohn")
 
-
-        with mock.patch('builtins.input', side_effect=[ 'y','q']):
+        with mock.patch('builtins.input', side_effect=['y', 'q']):
             deleted_successfully = employee_menu.delete_entry(employee)
         self.assertFalse(deleted_successfully)
 
     def test_convert_date(self):
-        self.assertIsInstance(convertdate("04/25/2018"),datetime.datetime)
+        self.assertIsInstance(convertdate("04/25/2018"), datetime.datetime)
         self.assertIsNone(convertdate("13/25/2018"))
 
 
-
-
 class TestTaskSeach(unittest.TestCase):
-
 
     @classmethod
     def setUpClass(cls):
@@ -133,32 +120,31 @@ class TestTaskSeach(unittest.TestCase):
         employee_name = "John Doe"
         employee_username = "test"
         test_employee = Employee.create(employee_username=employee_username,
-                                      employee_name=employee_name)
+                                        employee_name=employee_name)
         test_employee.save()
         task_title = "Testing Task Title1"
         task_timespent = "10"
-        task_notes  = "Testing !"
+        task_notes = "Testing !"
         task = Task(employee=test_employee, title=task_title,
                     timespent=int(task_timespent), notes=task_notes)
         task.save()
 
-
     def test_add_task(self):
-        #Test adding task with a date provided
-        main_menu =  MainMenu()
+        # Test adding task with a date provided
+        main_menu = MainMenu()
         test_name = "John Doe"
         task_title = "Testing Task Title2"
         task_timespent = "30"
-        task_notes  = "coding!"
+        task_notes = "coding!"
         datestr = "03/18/1981"
 
         prompts = [test_name, datestr, task_title, task_timespent,
-                   task_notes,'y', 'q']
+                   task_notes, 'y', 'q']
         with mock.patch('builtins.input', side_effect=prompts):
             added_successfully = main_menu.add_task()
         self.assertTrue(added_successfully)
 
-        #test adding task without date
+        # test adding task without date
         task_title = "Testing Task Title3"
         prompts = [test_name, "", task_title, task_timespent,
                    task_notes, 'y', 'q']
@@ -167,43 +153,42 @@ class TestTaskSeach(unittest.TestCase):
         self.assertTrue(added_successfully)
 
     def test_add_task_employee_not_found(self):
-        main_menu =  MainMenu()
+        main_menu = MainMenu()
         test_name = "Employee Notfound"
         task_title = "Testing Task Title"
         task_timespent = "30"
-        task_notes  = "Testing out code"
+        task_notes = "Testing out code"
 
         prompts = [test_name, " ", task_title, task_timespent,
-                   task_notes,'y', 'q']
+                   task_notes, 'y', 'q']
         with mock.patch('builtins.input', side_effect=prompts):
             added_successfully = main_menu.add_task()
         self.assertFalse(added_successfully)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
-    def test_view_tasks(self, mock_stdout ):
+    def test_view_tasks(self, mock_stdout):
         tasksearch_menu = TaskSearch()
-        with mock.patch('builtins.input', side_effect=['s','v','n','q','q']):
+        with mock.patch('builtins.input',
+                        side_effect=['s', 'v', 'n', 'q', 'q']):
             tasksearch_menu.view_entries()
         self.assertEqual(len(tasksearch_menu.entries), 3)
 
-
     def test_simple_search(self):
         tasksearch_menu = TaskSearch()
-        with mock.patch('builtins.input', side_effect=['coding','q','q']):
+        with mock.patch('builtins.input', side_effect=['coding', 'q', 'q']):
             tasksearch_menu.simple_search()
         self.assertEqual(len(tasksearch_menu.entries), 2)
 
-
     def test_simple_search_notfound(self):
         tasksearch_menu = TaskSearch()
-        with mock.patch('builtins.input', side_effect=['dog','q','q']):
+        with mock.patch('builtins.input', side_effect=['dog', 'q', 'q']):
             tasksearch_menu.simple_search()
         self.assertEqual(len(tasksearch_menu.entries), 0)
 
     def test_employee_search(self):
         tasksearch_menu = TaskSearch()
-        with mock.patch('builtins.input', side_effect=['John Doe',
-                                                       'q', 'q']):
+        with mock.patch('builtins.input', side_effect=['John',
+                                                       '1', 'q', 'q', 'q']):
             tasksearch_menu.search_by_employee_name()
         self.assertEqual(len(tasksearch_menu.entries), 3)
 
@@ -214,19 +199,19 @@ class TestTaskSeach(unittest.TestCase):
             tasksearch_menu.search_by_timespent()
         self.assertEqual(len(tasksearch_menu.entries), 1)
 
-
     def test_date_search(self):
         tasksearch_menu = TaskSearch()
         today_str = datetime.datetime.now().strftime('%m/%d/%Y')
-        with mock.patch('builtins.input', side_effect=[today_str,'q','q','q']):
+        with mock.patch('builtins.input',
+                        side_effect=[today_str, 'q', 'q', 'q']):
             tasksearch_menu.search_by_taskdate()
         self.assertEqual(len(tasksearch_menu.entries), 2)
 
     def test_daterange_search(self):
         tasksearch_menu = TaskSearch()
         startdate = "03/18/1980"
-        enddate =  "03/18/1981"
-        prompts = [startdate, enddate,'q','q','q']
+        enddate = "03/18/1981"
+        prompts = [startdate, enddate, 'q', 'q', 'q']
         with mock.patch('builtins.input', side_effect=prompts):
             tasksearch_menu.search_by_daterange()
         self.assertEqual(len(tasksearch_menu.entries), 1)
@@ -235,8 +220,9 @@ class TestTaskSeach(unittest.TestCase):
         main_menu = MainMenu()
         with mock.patch('builtins.input',
                         side_effect=['s','q','q']):
-             main_menu.menu_loop()
+             return_value = main_menu.menu_loop()
+        self.assertTrue(return_value)
 
 
 if __name__ == "__main__":
-     unittest.main()
+    unittest.main()
