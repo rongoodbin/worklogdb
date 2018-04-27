@@ -32,7 +32,8 @@ class TestEmployeeMenu(unittest.TestCase):
                     timespent=int(task_timespent), notes=task_notes)
         task.save()
 
-    def test_add_employee(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_add_employee(self, mock_stdout):
         employee_menu = EmployeeMenu()
         employee_username = "jblack"
         employee_name = "Jack Black"
@@ -45,7 +46,8 @@ class TestEmployeeMenu(unittest.TestCase):
         self.assertEqual(found_employee.employee_username, employee_username)
         self.assertEqual(found_employee.employee_name, employee_name)
 
-    def test_add_existing_employee(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_add_existing_employee(self, mock_stdout):
         employee_menu = EmployeeMenu()
         employee_name = "Ron John"
         employee_username = "rjohn"
@@ -54,6 +56,15 @@ class TestEmployeeMenu(unittest.TestCase):
             added_successfully = employee_menu.add_employee()
 
         self.assertFalse(added_successfully)
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_find_employee(self, mock_stdout):
+        employee_menu = EmployeeMenu()
+        employee_username = "rjohn"
+        with mock.patch('builtins.input', side_effect=[employee_username,
+                                                       'q', 'q', 'q']):
+            employee_menu.search_employees()
+        self.assertEqual(len(employee_menu.employees), 1)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     def test_view_employees(self, mock_stdout):
@@ -76,7 +87,8 @@ class TestEmployeeMenu(unittest.TestCase):
         self.assertEqual(employee.employee_name, employee_name2)
         self.assertEqual(employee.employee_username, employee_username2)
 
-    def test_delete_employee(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_delete_employee(self, mock_stdout):
         employee_username = "jmith"
         employee_name = "Jane Smith"
 
@@ -93,7 +105,8 @@ class TestEmployeeMenu(unittest.TestCase):
         with self.assertRaises(DoesNotExist):
             Employee.get(employee_username=employee_username)
 
-    def test_delete_employee_with_task(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_delete_employee_with_task(self, mock_stdout):
         employee_menu = EmployeeMenu()
 
         employee = Employee.get(employee_username="rjohn")
@@ -129,7 +142,8 @@ class TestTaskSeach(unittest.TestCase):
                     timespent=int(task_timespent), notes=task_notes)
         task.save()
 
-    def test_add_task(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_add_task(self, mock_stdout):
         # Test adding task with a date provided
         main_menu = MainMenu()
         test_name = "John Doe"
@@ -152,7 +166,8 @@ class TestTaskSeach(unittest.TestCase):
             added_successfully = main_menu.add_task()
         self.assertTrue(added_successfully)
 
-    def test_add_task_employee_not_found(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_add_task_employee_not_found(self, mock_stdout):
         main_menu = MainMenu()
         test_name = "Employee Notfound"
         task_title = "Testing Task Title"
@@ -171,52 +186,59 @@ class TestTaskSeach(unittest.TestCase):
         with mock.patch('builtins.input',
                         side_effect=['s', 'v', 'n', 'q', 'q']):
             tasksearch_menu.view_entries()
-        self.assertEqual(len(tasksearch_menu.entries), 3)
+        self.assertEqual(tasksearch_menu.entries_count(), 3)
 
-    def test_simple_search(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_simple_search(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         with mock.patch('builtins.input', side_effect=['coding', 'q', 'q']):
             tasksearch_menu.simple_search()
-        self.assertEqual(len(tasksearch_menu.entries), 2)
+        self.assertEqual(tasksearch_menu.entries_count(), 2)
 
-    def test_simple_search_notfound(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_simple_search_notfound(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         with mock.patch('builtins.input', side_effect=['dog', 'q', 'q']):
             tasksearch_menu.simple_search()
-        self.assertEqual(len(tasksearch_menu.entries), 0)
+        self.assertEqual(tasksearch_menu.entries_count(), 0)
 
-    def test_employee_search(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_employee_search(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         with mock.patch('builtins.input', side_effect=['John',
                                                        '1', 'q', 'q', 'q']):
             tasksearch_menu.search_by_employee_name()
-        self.assertEqual(len(tasksearch_menu.entries), 3)
+        self.assertEqual(tasksearch_menu.entries_count(), 3)
 
-    def test_timespent_search(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_timespent_search(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         with mock.patch('builtins.input',
                         side_effect=['10', 'q', 'q', 'q']):
             tasksearch_menu.search_by_timespent()
-        self.assertEqual(len(tasksearch_menu.entries), 1)
+        self.assertEqual(tasksearch_menu.entries_count(), 1)
 
-    def test_date_search(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_date_search(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         today_str = datetime.datetime.now().strftime('%m/%d/%Y')
         with mock.patch('builtins.input',
                         side_effect=[today_str, 'q', 'q', 'q']):
             tasksearch_menu.search_by_taskdate()
-        self.assertEqual(len(tasksearch_menu.entries), 2)
+        self.assertEqual(tasksearch_menu.entries_count(), 2)
 
-    def test_daterange_search(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_daterange_search(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         startdate = "03/18/1980"
         enddate = "03/18/1981"
         prompts = [startdate, enddate, 'q', 'q', 'q']
         with mock.patch('builtins.input', side_effect=prompts):
             tasksearch_menu.search_by_daterange()
-        self.assertEqual(len(tasksearch_menu.entries), 1)
+        self.assertEqual(tasksearch_menu.entries_count(), 1)
 
-    def test_menu_loop(self):
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_menu_loop(self, mock_stdout):
         main_menu = MainMenu()
         with mock.patch('builtins.input',
                         side_effect=['s','q','q']):

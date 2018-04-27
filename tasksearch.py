@@ -6,6 +6,7 @@ class TaskSearch():
 
     def __init__(self):
 
+        self.entries = None
         self.menu = OrderedDict([
             ('v', self.view_entries),
             ('s', self.simple_search),
@@ -16,6 +17,9 @@ class TaskSearch():
             ('r', self.search_by_daterange)
 
         ])
+
+    def entries_count(self):
+        return len(self.entries)
 
     def view_entries(self, **kwargs):
         """view previous entries """
