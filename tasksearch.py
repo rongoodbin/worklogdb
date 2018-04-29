@@ -114,6 +114,8 @@ class TaskSearch():
                     break
                 else:
                     print("Date format is incorrect")
+            else:
+                break
 
         print("Task Title:" + task.title)
         response = input("Enter new value or enter to leave as is: ")
@@ -122,14 +124,16 @@ class TaskSearch():
 
         print("Time Spent:" + str(task.timespent))
         while True:
-           response = input("Enter new value or enter to leave as is: ")
-           if not response.isdigit():
-               print("Need an integer value!")
-               continue
-           if response != "":
-              task.timespent = int(response)
-              break
-
+            response = input("Enter new value or enter to leave as is: ")
+            if response != '':
+                if not response.isdigit():
+                    print("Need an integer value!")
+                    continue
+                if response != "":
+                    task.timespent = int(response)
+                    break
+            else:
+                break
 
         print("Notes:" + str(task.notes))
         response = input("Enter new value or enter to leave as is: ")

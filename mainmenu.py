@@ -26,10 +26,31 @@ class MainMenu:
         employee_name = input("Employee name:")
         employee = find_employee(employee_name)
         if employee:
-            task_date_str = input("Task Date(MM/DD/YYYY) or return for today:")
-            task_date = convertdate(task_date_str)
-            task_title = input("Task title:")
-            task_timespent = input("Time spent on Task(minutes):")
+
+            while True:
+                 task_date_str = input("Task Date (MM/DD/YYYY) or return for today:")
+                 if task_date_str == '':
+                     task_date = None
+                     break
+                 task_date = convertdate(task_date_str)
+                 if task_date is None:
+                     print("Please enter a valid date (MM/DD/YYYY)")
+                 else:
+                     break
+
+            while True:
+                 task_title = input("Task title:")
+                 if task_title:
+                     break
+                 print("You need to enter a task title")
+
+            while True:
+                task_timespent = input("Time spent on Task(minutes):")
+                if task_timespent == "" or not task_timespent.isdigit():
+                    print("Please enter a valid number value for time spent !")
+                else:
+                    break
+
             task_notes = input("Task Notes:")
             if input("Save task? [Yn] ").lower() != 'n':
                 if task_date:
