@@ -104,12 +104,16 @@ class TaskSearch():
 
         timestamp = task.timestamp.strftime('%A %B %d %Y %I:%M')
 
-        print("Task Date:" + timestamp)
-        response = input("Enter new value or enter to leave as is: ")
-        if response != "":
-            newtimestamp = convertdate(response)
-            if newtimestamp:
-                task.timestamp = newtimestamp
+        while True:
+            print("Task Date:" + timestamp)
+            response = input("Enter new value or enter to leave as is: ")
+            if response != "":
+                newtimestamp = convertdate(response)
+                if newtimestamp:
+                    task.timestamp = newtimestamp
+                    break
+                else:
+                    print("Date format is incorrect")
 
         print("Task Title:" + task.title)
         response = input("Enter new value or enter to leave as is: ")
@@ -117,9 +121,15 @@ class TaskSearch():
             task.title = response
 
         print("Time Spent:" + str(task.timespent))
-        response = input("Enter new value or enter to leave as is: ")
-        if response != "":
-            task.timespent = int(response)
+        while True:
+           response = input("Enter new value or enter to leave as is: ")
+           if not response.isdigit():
+               print("Need an integer value!")
+               continue
+           if response != "":
+              task.timespent = int(response)
+              break
+
 
         print("Notes:" + str(task.notes))
         response = input("Enter new value or enter to leave as is: ")

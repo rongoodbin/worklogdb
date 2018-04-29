@@ -2,10 +2,16 @@ from peewee import *
 import os
 import datetime
 
+
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__))
-)
-db = SqliteDatabase(os.path.join(__location__, 'db/worklog.db'))
+    )
+
+db_directory =__location__+"/db/"
+if not os.path.exists(db_directory):
+    os.makedirs(db_directory)
+
+db = SqliteDatabase(db_directory + "worklog.db")
 
 
 class Employee(Model):

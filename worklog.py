@@ -1,5 +1,5 @@
 from mainmenu import *
-from models import initialize
+from models import *
 
 if __name__ == "__main__":
     # initialize the database, if setup already it will use existing

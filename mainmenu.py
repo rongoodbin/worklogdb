@@ -45,6 +45,7 @@ class MainMenu:
                 print("Task saved !")
                 return True
         else:
+            print("Employee not found!")
             return False
 
     def task_search(self):
