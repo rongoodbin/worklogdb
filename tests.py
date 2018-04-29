@@ -184,7 +184,7 @@ class TestTaskSeach(unittest.TestCase):
     def test_view_tasks(self, mock_stdout):
         tasksearch_menu = TaskSearch()
         with mock.patch('builtins.input',
-                        side_effect=['s', 'v', 'n', 'q', 'q']):
+                        side_effect=['s', 'v', 'n', 'p', 'q', 'q']):
             tasksearch_menu.view_entries()
         self.assertEqual(tasksearch_menu.entries_count(), 3)
 
@@ -236,6 +236,35 @@ class TestTaskSeach(unittest.TestCase):
         with mock.patch('builtins.input', side_effect=prompts):
             tasksearch_menu.search_by_daterange()
         self.assertEqual(tasksearch_menu.entries_count(), 1)
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_delete_task(self, mock_stdout):
+        main_menu = MainMenu()
+        test_name = "John Doe"
+        task_title = "Testing Task To be deleted"
+        task_timespent = "1"
+        task_notes = "to be deleted"
+        datestr = "07/04/1776"
+
+        prompts = [test_name, datestr, task_title, task_timespent,
+                   task_notes, 'y', 'q']
+        with mock.patch('builtins.input', side_effect=prompts):
+            main_menu.add_task()
+
+        task_search = TaskSearch()
+        prompts = ["07/04/1776", 'd','y','q','q']
+        with mock.patch('builtins.input', side_effect=prompts):
+              task_search.search_by_taskdate()
+
+        sdate = convertdate("07/04/1976")
+        tasks = Task.select().where(
+                      Task.timestamp.year == sdate.year \
+                      and Task.timestamp.month == sdate.month \
+                      and Task.timestamp.day == sdate.day)
+
+        self.assertEquals(len(tasks), 0)
+
+
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     def test_menu_loop(self, mock_stdout):
