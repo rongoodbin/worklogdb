@@ -68,7 +68,7 @@ class EmployeeMenu:
                     clear()
                     break
                 if next_action == 'd':
-                    self.delete_entry(self.employee)
+                    self.delete_entry(employee)
                     break
                 clear()
 
